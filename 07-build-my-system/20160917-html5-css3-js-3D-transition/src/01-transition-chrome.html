@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>color transition</title>
+	<style>
+		#block{
+			width: 400px;
+			height: 400px;
+			background-color: #69c;				/*背景色*/
+			margin: 0 auto;						/*外边距：先上下，后左右。这个设置对应的效果是这个块元素居中显示*/
+			-webkit-transition: background-color 2s ease-in;	/*设置背景颜色这个属性做渐变效果，过渡时间是2s，缓慢开始、缓慢结束*/
+		}
+		/*设置当鼠标放到块元素上后对应产生的变化*/
+		#block:hover{
+			background-color: red;
+		}
+	</style>
+</head>
+<body>
+	<div id = "block">
+	</div>
+</body>
+</html>

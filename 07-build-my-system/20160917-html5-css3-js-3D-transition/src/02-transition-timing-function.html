@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>color transition</title>
+	<style>
+		#wrapper{
+			width: 1024px;
+			margin: 0 auto;
+		}
+		.progress-bar{
+			height: 40px;
+			width: 40px;
+			background-color: #69c;
+		}
+		.progress-bar:hover{
+			width: 960px;
+			background-color: red;
+		}
+		#bar1{
+			-webkit-transition: width 2s linear, background-color 2s linear;
+		}
+		#bar2{
+			-webkit-transition: width 2s ease, background-color 2s ease;
+		}
+		#bar3{
+			-webkit-transition: width 2s ease-in, background-color 2s ease-in;
+		}
+		#bar4{
+			-webkit-transition: width 2s ease-out, background-color 2s ease-out;
+		}
+		#bar5{
+			-webkit-transition: width 2s ease-in-out, background-color 2s ease-in-out;
+		}
+	</style>
+</head>
+<body>
+	<div id ="wrapper">
+		<p>linear</p>
+		<div class="progress-bar" id="bar1"></div>
+
+		<p>ease</p>
+		<div class="progress-bar" id="bar2"></div>
+
+		<p>ease-in</p>
+		<div class="progress-bar" id="bar3"></div>
+
+		<p>ease-out</p>
+		<div class="progress-bar" id="bar4"></div>
+
+		<p>ease-in-out</p>
+		<div class="progress-bar" id="bar5"></div>
+	</div>
+</body>
+</html>

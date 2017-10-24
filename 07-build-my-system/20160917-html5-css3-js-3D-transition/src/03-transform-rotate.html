@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>color transition</title>
+	<style>
+		#experiment{
+			/*浏览器将会离我观察到的3D 物体有800像素远*/
+			-webkit-perspective: 800;
+			
+			/*从浏览器的正中心观察这个三维世界*/
+			-webkit-perspective-origin: 50% 50%;
+
+			/*告诉浏览器之后要做的transform 的操作是在3D 场景设置，而不是在2D*/
+			-webkit-transform-style: -webkit-preserve-3d;
+		}
+		#block{
+			width: 500px;
+			height: 500px;
+			background-color: #69c;
+			margin: 0 auto;
+
+			/*使用transform:rotateX 让其在X轴旋转45度*/
+			/*可以简单修改程序看其分别在X、Y、Z轴的旋转效果*/
+			-webkit-transform:rotateX(45deg)
+		}
+	</style>
+</head>
+<body>
+	<div id="experiment">
+		<div id="block">
+
+		</div>
+	</div>
+</body>
+</html>
