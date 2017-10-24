@@ -1,0 +1,413 @@
+/*清除浮动*/
+.clearfix:after
+{
+	content: '';
+	display: block;
+	clear: both;
+}
+
+h2
+{
+	font-size: 30px;
+}
+
+h3
+{
+	font-size: 24px;
+}
+
+p
+{
+	font-size: 18px;
+	letter-spacing: 1px;
+}
+
+ul
+{
+	margin: 0;
+}
+
+header
+{
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/*分割线样式*/
+.hr
+{
+	width: 100%;
+	height: 2px;
+
+	/*效果是居中*/
+	margin: 20px auto;
+}
+
+/*选定元素名nav 下的所有部分*/
+nav
+{
+	/*为nav 元素添加背景色*/
+	background: #ccc;
+	
+	/*块级元素的高度默认是自动的，如果nav 中没有内容撑起这个高度，那么高度就默认为0，可以指定高度*/
+	height: 50px;
+}
+
+/*选定id 为banner 的部分 */
+#banner
+{
+	/*需要将其背景色置为透明，否则背景图无法看到*/
+	background: transparent;
+
+	height: 700px;
+}
+
+/*选定元素名nav 下，元素名为ul 的部分*/
+nav ul
+{
+	/*将列表的样式全部去除：不显示前面的点*/
+	list-style: none;
+	
+	/*margin 用于设置外边距*/
+	margin: 0;
+
+	/*向右浮动*/
+	float: right;
+}
+
+nav ul li, nav .logo
+{
+	/*让列表的元素横着排列*/
+	display: inline-block;
+	
+	/*为列表元素指定行高*/
+	line-height: 50px;
+	
+	/*设置右外边距*/
+	margin-right: 20px;
+}
+
+nav a
+{
+	line-height: 50px;
+	
+	/*去掉所有文字装饰，比如去掉链接的下划线*/
+	text-decoration: none;
+	
+	/*效果：用户在点击链接周边一定范围时，点击效果和点击链接本身一样*/
+	display: inline-block;
+	
+	/*将display设置为inline-block后，更改它的宽是无效的，但更改高就可以*/
+	height: inherit;	/*这样指定高和其母元素一致，也就是和nav 一致*/
+
+	color: #fff;
+}
+
+nav .logo
+{
+	float: left;
+
+	/*上下内边距为0，左右内边距为10px*/
+	padding: 0px 10px;
+}
+
+#banner .inner
+{
+	/*正常会占据母元素的所有宽度，这里限定其宽度值*/
+	max-width: 300px;
+	
+	/*文字居中*/
+	text-align: center;
+	
+	/*实现整个块在页面中居中，指定上下外边距为0，左右外边距为auto*/
+	margin: 0 auto;
+	
+	/*下面两个设置，使这个块的上边距离母元素的上面有160px*/
+	position: relative;
+	top: 160px;
+
+	color: #eff5fb;
+}
+
+#banner .inner h1
+{
+	/*设置h1 的外边距为0 */
+	margin: 0;
+}
+
+/*设置页面中所有按钮的样式*/
+button
+{
+	/*去掉所有边框*/	
+	border: none;
+	
+	/*设置背景颜色*/
+	background: #089DB0;
+	
+	/*设置文字颜色*/
+	color: #fff;
+
+	padding: 10px;
+}
+
+#banner button
+{
+	/*padding 用于设置内边距*/
+	padding: 8px 25px;
+
+	/*设置圆角*/
+	border-radius: 5px;
+}
+
+.sub-heading
+{
+	/*设置段落的行间距*/
+	line-height:30px;
+
+	/*设置上下外边距为30，左右为0*/
+	margin: 30px 0;
+
+	font-size: 18px;
+}
+
+#banner .inner .more
+{
+	/*让“更多”的上边距，距离“按钮”的下边距*/
+	margin-top: 280px;
+}
+
+.logo
+{
+	/*设置字体*/
+	font-size: 20px;
+
+	/*设置字重*/
+	font-weight: 700;
+
+	/*设置字符间隔*/
+	letter-spacing: 1px;
+}
+
+.logo a
+{
+	/*设置字体颜色*/
+	color: #fff;
+}
+
+.green-section
+{
+	/*背景颜色*/
+	background: #089DB0;
+
+	/*文字颜色*/
+	color: #fff;
+
+	/*所有文本内容居中*/
+	text-align: center;
+
+	/*上下内边距为100px，左右内边距位0px*/
+	padding: 100px 0;
+}
+
+.wrapper
+{
+	max-width: 1080px;
+	margin: 0 auto;	
+}
+
+.green-section .hr
+{
+	background: #078494;
+	width: 60%;
+}
+
+.green-section .icon-group .icon
+{
+	display: inline-block;
+	width: 80px;
+	height: 80px;
+	background: #0D6F7C;
+
+	/*旋转45度*/
+	transform: rotate(45deg);
+
+	/*让几个块分开*/
+	margin: 20px;
+}
+
+.icon-group
+{
+	margin-top: 60px;
+}
+
+.gray-section
+{
+	background: #000;
+	color: #fff;
+}
+
+/*以下两个样式配合，才能实现图片占页面宽度的45%的效果*/
+.gray-section .img-section
+{
+	/*指定包裹图片的块占网页宽度的45%*/
+	width: 45%;
+}
+
+.img-section img
+{
+	/*指定图片占据包裹图片的块的宽度的100%*/
+	width: 100%;
+}
+
+.gray-section .text-section
+{
+	width: 55%;
+}
+
+/*指定.article-preview下面的所有的儿子div，但是不包含孙子div*/
+.article-preview > div
+{
+	float: left;
+
+	font-size: 0;
+}
+
+/*奇偶选择器
+ * 对于class为article-preview的，是奇数的就使用下面的样式*/
+.article-preview:nth-child(odd)
+{
+	background-color: rgba(255, 255, 255, 0.05)
+}
+
+/*清除.article-preview的浮动，否则可能.article-preview > div下的文字无法显示*/
+.article-preview:after
+{
+	content: '';
+	display: block;
+	clear: both;
+}
+
+.text-section
+{
+	position: relative;
+	top: 68px;
+	left: 50px;
+}
+
+.text-section h2
+{
+	margin-bottom: 20px;
+}
+
+.text-section .sub-heading
+{
+	font-size: 22px;
+	margin-top: 0;
+}
+
+/*text-section下面所有直系的成员*/
+.text-section > *
+{
+	max-width: 90%;
+}
+
+.purple-section
+{
+	/*下面的设置可以保证purple-section和gray-section之间没有间隙*/
+	padding: 80px;
+
+	background: #3f3965;
+	color: #fff;
+}
+
+.purple-section .heading-wrapper
+{
+	text-align: center;
+}
+
+.purple-section .hr
+{
+	background: #373259;
+	width: 60%;
+}
+
+.card
+{
+	float: left;
+
+	/*宽度设置为母元素的50%*/
+	width: 50%;
+
+	min-height: 300px;
+
+	padding: 50px;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+/*.card下的第一个子元素*/
+.card:first-child
+{
+	background: rgba(0, 0, 0, 0.04);
+}
+
+/*.card下的第二个子元素*/
+.card:nth-child(2)
+{
+	background: rgba(0, 0, 0, 0.08);
+}
+
+.card:nth-child(3)
+{
+	background: rgba(0, 0, 0, 0.12);
+}
+
+.card:nth-child(4)
+{
+	background: rgba(0, 0, 0, 0.16);
+}
+
+footer
+{
+	background: #333;
+	color: #fff;
+	min-height: 200px;
+	text-align: center;
+}
+
+/*为什么ul.share-group和ul .share-group的效果完全不同？*/
+ul.share-group
+{
+	display: block;
+	width: 1080px;
+	margin: 0 auto;
+	padding: 50px;
+}
+
+.share-group li
+{
+	display: inline-block;
+	padding: 10px;
+}
+
+.copy
+{
+
+	padding-bottom: 20px;
+}
+
+.main-wrapper
+{
+	/*指定背景颜色、背景图片地址*/
+	background: #444 url(../img/banner.jpg);
+	
+	/*固定不能动*/
+	background-attachment: fixed;
+
+	background-repeat: no-repeat;
+
+	background-size: cover;
+	
+	background-position: center;
+}
