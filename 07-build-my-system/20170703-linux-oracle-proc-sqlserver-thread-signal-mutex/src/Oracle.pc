@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "Oracle.h"
+
+EXEC SQL INCLUDE sqlca;
+
+//定义存储批量委托的内存
+EXEC SQL BEGIN DECLARE SECTION;
+    int l_report_serial_no[MAXCOUNT];
+    char vc_stockholder_id[MAXCOUNT][30];
+    char vc_report_code[MAXCOUNT][21];
+    char vc_report_direction[MAXCOUNT][3];
+    char vc_report_seat[MAXCOUNT][7];
+    char vc_seat_id[MAXCOUNT][7];
+    char vc_rowid[MAXCOUNT][19];
+    double en_entrust_price[MAXCOUNT];
+    int l_entrust_amount[MAXCOUNT];
+    int l_fund_id[MAXCOUNT];
+    int l_operator_no[MAXCOUNT];
+    int l_basecombi_id[MAXCOUNT];
+    char c_cancel_flag[MAXCOUNT][2];
+    int l_entrust_serial_no[MAXCOUNT];
+    char c_price_type[MAXCOUNT][2];
+    char c_entrust_direction[MAXCOUNT][6];
+    double en_balance[MAXCOUNT];
+    char c_stock_type[MAXCOUNT][6];
+    int l_cancel_rec_num[MAXCOUNT];
+    char c_entrust_status[MAXCOUNT][2];
+
+    char c_market_no;
+    int iEntrustCount = 0;
+    int iUpdateCount = 0;
+    int iOnceTimeCount = MAXCOUNT;
+EXEC SQL END DECLARE SECTION;
+
+EXEC SQL BEGIN DECLARE SECTION;
+    varchar username[20];
+    varchar password[20];
+EXEC SQL END DECLARE SECTION;
+
+int OracleInit(char *sDbUser, char *sDbPwd)
+{
+    strcpy(username.arr, sDbUser);
+    username.len = strlen(sDbUser);
+    strcpy(password.arr, sDbPwd);
+    password.len = strlen(sDbPwd);
+
+    //和数据库建立连接
+    EXEC SQL CONNECT :username IDENTIFIED By :password;
+    if(0 != sqlca.sqlcode){
+        printf("login failed!\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int GetEntrusts(char sMarketNo, EntrustData **Entrusts, int iCount)
+{
+    c_market_no = sMarketNo;
+    int iPos = 0;
+
+    EXEC SQL select /*+INDEX(a IDX_TENTRUSTS_STATUS)*/
+        a.c_entrust_status,
+        a.c_stock_type,
+        a.rowid,
+        a.l_report_serial_no, 
+        a.vc_stockholder_id, 
+        a.vc_report_code, 
+        a.vc_report_direction, 
+        nvl(a.vc_report_seat,' ') vc_report_seat,
+        a.en_entrust_price,
+        decode(b.c_report_unit, '1', a.l_entrust_amount, a.l_entrust_amount/b.l_amount_per_hand) l_entrust_amount,
+        a.l_fund_id, 
+        a.l_basecombi_id, 
+        a.c_cancel_flag, 
+        a.l_entrust_serial_no, 
+        nvl(a.c_price_type,' ') c_price_type,
+        a.c_entrust_direction, 
+        nvl(a.en_balance, 0.00) en_balance, 
+        nvl(a.l_cancel_rec_num,0) l_cancel_rec_num, 
+        nvl(a.vc_seat_id,' ') vc_seat_id,
+        a.l_operator_no 
+                        
+        INTO
+        :c_entrust_status,
+        :c_stock_type,
+        :vc_rowid,
+        :l_report_serial_no ,
+        :vc_stockholder_id,
+        :vc_report_code,
+        :vc_report_direction,
+        :vc_report_seat,
+        :en_entrust_price,
+        :l_entrust_amount,
+        :l_fund_id,
+        :l_basecombi_id,
+        :c_cancel_flag,
+        :l_entrust_serial_no,
+        :c_price_type,
+        :c_entrust_direction,
+        :en_balance,
+        :l_cancel_rec_num,
+        :vc_seat_id, 
+        :l_operator_no 
+        from tentrusts a,    tstocktype b, tasset d, tsecuritiesbranch e 
+        where a.c_market_no=:c_market_no and a.c_market_no = b.c_market_no 
+        and a.c_stock_type = b.c_stock_type 
+        and ((b.l_amount_per_hand > 0 and b.c_report_unit = '2') or (b.c_report_unit = '1'))             
+        and not ( (a.c_busin_class = '6' and a.c_sub_busin_class in ('1','3','4','5','6','g') and a.c_market_no = '1') or 
+                (a.c_busin_class = '5' and a.c_sub_busin_class in ('2') and a.c_market_no = '1') or
+                (a.c_busin_class = '5' and a.c_sub_busin_class = '7' )    ) 
+        and (a.c_entrust_status in ('1', 'A'))
+        and ( (INSTR(',m,n,u,t,l,M,o,$,',','||a.c_entrust_direction|| ',') <=0 and a.c_market_no = '1') 
+                or (INSTR(',m,n,u,t,l,M,e,f,o,15,16,17,18,$,',','||a.c_entrust_direction|| ',') <=0 and a.c_market_no = '2'))
+        and not (a.c_entrust_direction = 'C' and b.c_stock_type in ('a','d') )
+        and not (a.c_entrust_direction = 'O' and b.c_stock_type IN ('1','{') )    
+        and not (a.c_market_no='1' and a.c_busin_class = 'v') 
+        and not (a.c_market_no='1' and a.c_entrust_direction in ('15','16','17','18','26','27','30','31','35','36','37','38','41') ) 
+        and a.l_asset_id = d.l_asset_id and d.l_securities_branch = e.l_serial_no and e.c_distribution='0' 
+        and a.c_stock_type <> ']' 
+        and a.c_Busin_Class not in ('r','q','u') 
+        and a.c_price_type not in ('H', 'I', 'J','P','Q','S','K')
+        and not ( a.c_price_type in ('c','d', 'e','f','g','h' ) and    a.c_busin_class='I' )
+        and a.c_launch_flag not in ('9')
+        and rownum <= :iOnceTimeCount
+        order by a.l_entrust_serial_no asc;
+
+    //select取出的记录数
+    iEntrustCount = sqlca.sqlerrd[2]; 
+    if (0 >= iEntrustCount){
+        return 0;
+    }
+    //更新待报
+    EXEC SQL UPDATE tentrusts SET    
+        c_entrust_status = decode(c_entrust_status, '1', '2', 'A', 'B', c_entrust_status), 
+        l_report_time = to_number(to_char(sysdate,'hh24miss'))
+        WHERE rowid=:vc_rowid and (c_entrust_status = '1' or c_entrust_status = 'A');
+    //更新状态成功的条数 
+    iUpdateCount = sqlca.sqlerrd[2];
+    //将数据拷贝到数组中
+    while(iPos < iEntrustCount){
+        memset(Entrusts[iPos], 0, sizeof(EntrustData));
+        
+        Entrusts[iPos]->l_report_serial_no = l_report_serial_no[iPos];
+        Entrusts[iPos]->l_entrust_serial_no = l_entrust_serial_no[iPos];
+        Entrusts[iPos]->en_entrust_price = en_entrust_price[iPos];
+        Entrusts[iPos]->l_entrust_amount = l_entrust_amount[iPos];
+        Entrusts[iPos]->en_balance = en_balance[iPos];
+        strcpy(Entrusts[iPos]->c_cancel_flag, c_cancel_flag[iPos]);
+        strcpy(Entrusts[iPos]->c_entrust_direction, c_entrust_direction[iPos]);
+        strcpy(Entrusts[iPos]->c_price_type, c_price_type[iPos]);
+        strcpy(Entrusts[iPos]->c_entrust_status, c_entrust_status[iPos]);
+        strcpy(Entrusts[iPos]->vc_stockholder_id, vc_stockholder_id[iPos]);
+        strcpy(Entrusts[iPos]->vc_report_code, vc_report_code[iPos]);
+        strcpy(Entrusts[iPos]->vc_report_direction, vc_report_direction[iPos]);
+        strcpy(Entrusts[iPos]->vc_report_seat, vc_report_seat[iPos]);
+        strcpy(Entrusts[iPos]->vc_rowid, vc_rowid[iPos]);
+        Entrusts[iPos]->l_fund_id = l_fund_id[iPos];
+        Entrusts[iPos]->l_basecombi_id = l_basecombi_id[iPos];
+        strcpy(Entrusts[iPos]->c_stock_type, c_stock_type[iPos]);
+        Entrusts[iPos]->l_cancel_rec_num = l_cancel_rec_num[iPos];
+        strcpy(Entrusts[iPos]->vc_seat_id, vc_seat_id[iPos]);
+        
+        iPos ++;
+    }
+    return iEntrustCount;
+}
