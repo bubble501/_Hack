@@ -12,6 +12,7 @@ class TimeZone;
 class Logger
 {
  public:
+  //定义日志级别
   enum LogLevel
   {
     TRACE,
@@ -61,13 +62,17 @@ class Logger
   Logger(SourceFile file, int line, bool toAbort);
   ~Logger();
 
+  //详细看LogStream.h/cc中针对日志流对象的实现
   LogStream& stream() { return impl_.stream_; }
 
+  //enum LogLevel
   static LogLevel logLevel();
   static void setLogLevel(LogLevel level);
 
+  //定义函数指针类型
   typedef void (*OutputFunc)(const char* msg, int len);
   typedef void (*FlushFunc)();
+  
   static void setOutput(OutputFunc);
   static void setFlush(FlushFunc);
   static void setTimeZone(const TimeZone& tz);

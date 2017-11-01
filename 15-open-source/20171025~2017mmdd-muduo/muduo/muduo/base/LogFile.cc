@@ -11,7 +11,7 @@ using namespace muduo;
 
 LogFile::LogFile(const string& basename,
                  size_t rollSize,
-                 bool threadSafe,
+                 bool threadSafe,    //是否考虑线程安全，控制是否加锁，如果不需要考虑线程安全，就不加锁，提升性能
                  int flushInterval,
                  int checkEveryN)
   : basename_(basename),
@@ -36,6 +36,7 @@ void LogFile::append(const char* logline, int len)
 {
   if (mutex_)
   {
+    //加锁
     MutexLockGuard lock(*mutex_);
     append_unlocked(logline, len);
   }

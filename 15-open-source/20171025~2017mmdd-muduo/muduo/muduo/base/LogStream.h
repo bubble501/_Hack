@@ -19,11 +19,19 @@ namespace detail
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000*1000;
 
+//定义一个“定长Buffer”类
+//通过data_、cur_指针，可以事先申请号定长内存，通过这两个指针来管理缓冲区的使用
+//避免频繁的申请、释放、扩展内存！
 template<int SIZE>
 class FixedBuffer : boost::noncopyable
 {
  public:
   FixedBuffer()
+    /*
+     * data_是缓冲区的起始地址
+     * cur_指向缓冲区的“头部”，暂时称其为缓冲区指针
+     * 从data_到cur_之间的缓冲区是已经使用了的缓冲区
+     */
     : cur_(data_)
   {
     setCookie(cookieStart);
@@ -34,6 +42,7 @@ class FixedBuffer : boost::noncopyable
     setCookie(cookieEnd);
   }
 
+  //往缓冲区中添加数据
   void append(const char* /*restrict*/ buf, size_t len)
   {
     // FIXME: append partially
@@ -44,14 +53,18 @@ class FixedBuffer : boost::noncopyable
     }
   }
 
+  //获取缓冲区的起始地址
   const char* data() const { return data_; }
+  //获取已经使用的缓冲区的长度
   int length() const { return static_cast<int>(cur_ - data_); }
 
   // write to data_ directly
   char* current() { return cur_; }
+  //获取剩下可用的缓冲区大小
   int avail() const { return static_cast<int>(end() - cur_); }
   void add(size_t len) { cur_ += len; }
 
+  //将缓冲区指针指向缓冲区开始的地方，也就是重置缓冲区
   void reset() { cur_ = data_; }
   void bzero() { ::bzero(data_, sizeof data_); }
 
@@ -69,24 +82,33 @@ class FixedBuffer : boost::noncopyable
   static void cookieEnd();
 
   void (*cookie_)();
+  //template<int SIZE>
   char data_[SIZE];
   char* cur_;
 };
 
 }
 
+//日志流类，是一个单例类
+//核心的一个功能就是重载各种类型的 << 操作符
 class LogStream : boost::noncopyable
 {
   typedef LogStream self;
  public:
+  //定义一个detail::kSmallBuffer大小的内存缓冲区
   typedef detail::FixedBuffer<detail::kSmallBuffer> Buffer;
 
+  //重载 << 操作符
+  //往缓冲区中写入数据
   self& operator<<(bool v)
   {
+    //void append(const char* /*restrict*/ buf, size_t len)
     buffer_.append(v ? "1" : "0", 1);
     return *this;
   }
 
+  //重载各种类型的 << 操作符
+  //返回值是 self& 是因为需要这样使用：stream << 1 << "str" << ... ;
   self& operator<<(short);
   self& operator<<(unsigned short);
   self& operator<<(int);
@@ -108,6 +130,7 @@ class LogStream : boost::noncopyable
 
   self& operator<<(char v)
   {
+    //void append(const char* /*restrict*/ buf, size_t len)
     buffer_.append(&v, 1);
     return *this;
   }
@@ -130,6 +153,9 @@ class LogStream : boost::noncopyable
 
   self& operator<<(const unsigned char* str)
   {
+    //reinterpret_cast <new_type> (expression)
+    //reinterpret_cast运算符是用来处理无关类型之间的转换
+    //它会产生一个新的值，这个值会有与原始参数（expressoin）有完全相同的比特位
     return operator<<(reinterpret_cast<const char*>(str));
   }
 
@@ -155,12 +181,16 @@ class LogStream : boost::noncopyable
 
   self& operator<<(const Buffer& v)
   {
+    //StringPiece toStringPiece() const { return StringPiece(data_, length()); }
     *this << v.toStringPiece();
     return *this;
   }
 
+  //往buffer中添加数据
   void append(const char* data, int len) { buffer_.append(data, len); }
+  //获取buffer对象
   const Buffer& buffer() const { return buffer_; }
+  //重置buffer
   void resetBuffer() { buffer_.reset(); }
 
  private:
@@ -174,6 +204,7 @@ class LogStream : boost::noncopyable
   static const int kMaxNumericSize = 32;
 };
 
+//格式化类
 class Fmt // : boost::noncopyable
 {
  public:
@@ -188,6 +219,7 @@ class Fmt // : boost::noncopyable
   int length_;
 };
 
+//通过内联函数定义日志的格式化输出函数
 inline LogStream& operator<<(LogStream& s, const Fmt& fmt)
 {
   s.append(fmt.data(), fmt.length());

@@ -72,6 +72,13 @@ class BlockingQueue : boost::noncopyable
  private:
   mutable MutexLock mutex_;
   Condition         notEmpty_;
+
+  /*
+   * push_front：双端队列头部增加一个元素
+   * push_back：双端队列尾部增加一个元素
+   * pop_front：删除双端队列中最前一个元素
+   * pop_back：删除双端队列中最后一个元素
+   */
   std::deque<T>     queue_;
 };
 

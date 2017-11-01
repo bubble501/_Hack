@@ -30,6 +30,7 @@ class LoggerImpl
 };
 */
 
+//线程局部变量
 __thread char t_errnobuf[512];
 __thread char t_time[32];
 __thread time_t t_lastSecond;
@@ -39,6 +40,7 @@ const char* strerror_tl(int savedErrno)
   return strerror_r(savedErrno, t_errnobuf, sizeof t_errnobuf);
 }
 
+//初始化设置muduo日志库的日志级别
 Logger::LogLevel initLogLevel()
 {
   if (::getenv("MUDUO_LOG_TRACE"))
@@ -51,6 +53,7 @@ Logger::LogLevel initLogLevel()
 
 Logger::LogLevel g_logLevel = initLogLevel();
 
+//日志级别的名称
 const char* LogLevelName[Logger::NUM_LOG_LEVELS] =
 {
   "TRACE ",
@@ -88,6 +91,8 @@ inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v)
   return s;
 }
 
+//默认的日志输出方法
+//往标准输出stdout中输出数据
 void defaultOutput(const char* msg, int len)
 {
   size_t n = fwrite(msg, 1, len, stdout);
@@ -95,6 +100,7 @@ void defaultOutput(const char* msg, int len)
   (void)n;
 }
 
+//Flush就是用于将缓存中的数据完整输出
 void defaultFlush()
 {
   fflush(stdout);

@@ -7,6 +7,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
+//注意namespace的使用语法
 namespace muduo
 {
 
@@ -41,6 +42,8 @@ class LogFile : boost::noncopyable
 
   int count_;
 
+  //boost::scoped_ptr是一个比较简单的智能指针
+  //它能保证在离开作用域之后它所管理对象能被自动释放
   boost::scoped_ptr<MutexLock> mutex_;
   time_t startOfPeriod_;
   time_t lastRoll_;

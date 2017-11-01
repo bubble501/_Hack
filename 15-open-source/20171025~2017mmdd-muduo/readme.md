@@ -67,3 +67,54 @@
 * 为什么把Thread定义为单例的，明明在实际编码中可能会创建多个线程啊？！
 * muduo中是如何具体使用Thread这个模块的呢？
 
+## (20171101)阅读muduo/base/Log..
+
+包括的源文件有：AsyncLogging.cc、AsyncLogging.h、LogFile.cc、LogFile.h、Logging.cc、Logging.h、LogStream.cc、LogStream.h
+
+* 其实每个源文件中也没有多少代码，其如何封装、如何模块化的思路还是值得学习的
+* AsyncLogging封装的是异步写日志线程，内部有一个专门写日志的异步线程
+	* 其实异步写日志的实现整体和目前我们报盘组的THsWriteLog实现是一致的
+	* 只是可能有一些细节有差异！
+* LogStream中定义了定长的内存缓冲区、实现了日志流类（主要是重载各种类型参数的 << 操作符）
+	* 一次申请定长的内存Buffer，然后重复使用
+	* 这个模块中还有涉及到十进制、十六进制转换成字符串的函数实现
+	* 重视各种整型：int、long、short之间的转换和兼容关系！
+
+依然存在的一些问题点：
+
+* AsyncLogging模块用到Mutex、Condition、CountDownLatch模块，这些暂时还没有看呢
+* 很多C++中STL、boost的用法还是有点糊涂！
+* 具体日志模块在muduo中是怎么使用的目前还没有看
+* 目前是简单阅读完成，没有介入GDB进行单步调试，分析变量、函数
+
+## (20171101)阅读muduo/base/BlockingQueue
+
+涉及到的源文件：BlockingQueue.h
+
+* 其中用到了MutexLock来进行加锁，保证队列数据的安全性
+	* 这个看起来和报盘组内部封装的TMyQueue有些像
+* 另外其中用到了Condition
+	* 当队列为空的时候，如果去取数据，那么`notEmpty_.wait();`
+	* 当往队列中放数据的时候，调用`notEmpty_.notify();`，通知wait的地方继续运行
+	* 这个Condition看起来和报盘组内使用的TTaskWakeUp很像
+
+>看到这里，发现很多基础的东西都是互通的，剩下的基础模块可以在后续阅读网络模块的时候再回头看！
+
+## 最后需要总结的一些技术点
+
+* C++语法层面
+	* std::move的作用、原理和用法
+	* boost::function
+	* boost::shared_ptr
+	* boost::scoped_ptr
+	* std::deque
+* 操作系统层面
+	* 多线程
+	* 线程同步
+* 内存管理层面
+	* 如果释放了内存地址，但还有某个地方有指针指向这个地址，如果不小心访问就会出问题！这个该怎么应对？
+* 文件IO层面
+* Socket API层面
+	* 如何优雅地关闭TCP连接
+	* 如果旧的TCP关闭了，结果代码中还有地方在用这个socket，新来的连接socket正好和老的socket重复了，那么这种场景如何应对；类似于释放了内存地址，但还有某个地方有指针指向这个地址，如果不小心访问就会出问题！
+* 编码规范层面

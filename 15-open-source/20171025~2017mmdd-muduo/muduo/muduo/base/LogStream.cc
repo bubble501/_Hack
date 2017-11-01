@@ -37,6 +37,7 @@ size_t convert(char buf[], T value)
   T i = value;
   char* p = buf;
 
+  //循环将十进制整型转换成字符串类型
   do
   {
     int lsd = static_cast<int>(i % 10);
@@ -49,11 +50,15 @@ size_t convert(char buf[], T value)
     *p++ = '-';
   }
   *p = '\0';
+  
+  //std::reverse用于将buf中的数据进行反转
+  //比如，'123'反转得到'321'
   std::reverse(buf, p);
 
   return p - buf;
 }
 
+//将十六进制整数转换成字符串类型
 size_t convertHex(char buf[], uintptr_t value)
 {
   uintptr_t i = value;
@@ -97,6 +102,7 @@ void FixedBuffer<SIZE>::cookieEnd()
 
 void LogStream::staticCheck()
 {
+  //static const int kMaxNumericSize = 32;
   BOOST_STATIC_ASSERT(kMaxNumericSize - 10 > std::numeric_limits<double>::digits10);
   BOOST_STATIC_ASSERT(kMaxNumericSize - 10 > std::numeric_limits<long double>::digits10);
   BOOST_STATIC_ASSERT(kMaxNumericSize - 10 > std::numeric_limits<long>::digits10);
@@ -108,7 +114,9 @@ void LogStream::formatInteger(T v)
 {
   if (buffer_.avail() >= kMaxNumericSize)
   {
+    //把整型v转换成字符串类型，存储到buffer_.current()中
     size_t len = convert(buffer_.current(), v);
+    //buffer的cur_指针后移
     buffer_.add(len);
   }
 }

@@ -16,14 +16,20 @@
 namespace muduo
 {
 
+/*
+ * AsyncLogging是单例类
+ * AsyncLogging通过名字看出来其是异步处理日志的
+ */
 class AsyncLogging : boost::noncopyable
 {
  public:
 
-  AsyncLogging(const string& basename,
-               size_t rollSize,
-               int flushInterval = 3);
+  //构造函数
+  AsyncLogging(const string& basename,  //
+               size_t rollSize,         //
+               int flushInterval = 3);  //
 
+  //析构函数
   ~AsyncLogging()
   {
     if (running_)
@@ -32,8 +38,10 @@ class AsyncLogging : boost::noncopyable
     }
   }
 
+  //新增一行日志记录
   void append(const char* logline, int len);
 
+  //启动异步写日志线程
   void start()
   {
     running_ = true;
@@ -41,6 +49,7 @@ class AsyncLogging : boost::noncopyable
     latch_.wait();
   }
 
+  //停止异步写日志线程
   void stop()
   {
     running_ = false;
@@ -54,6 +63,7 @@ class AsyncLogging : boost::noncopyable
   AsyncLogging(const AsyncLogging&);  // ptr_container
   void operator=(const AsyncLogging&);  // ptr_container
 
+  //异步写日志线程方法
   void threadFunc();
 
   typedef muduo::detail::FixedBuffer<muduo::detail::kLargeBuffer> Buffer;
@@ -64,13 +74,13 @@ class AsyncLogging : boost::noncopyable
   bool running_;
   string basename_;
   size_t rollSize_;
-  muduo::Thread thread_;
-  muduo::CountDownLatch latch_;
-  muduo::MutexLock mutex_;
-  muduo::Condition cond_;
-  BufferPtr currentBuffer_;
-  BufferPtr nextBuffer_;
-  BufferVector buffers_;
+  muduo::Thread thread_;        //异步写日志线程
+  muduo::CountDownLatch latch_; //
+  muduo::MutexLock mutex_;      //Muduo对Linux mutex进行的封装，用于线程同步
+  muduo::Condition cond_;       //
+  BufferPtr currentBuffer_;     //
+  BufferPtr nextBuffer_;        //
+  BufferVector buffers_;        //
 };
 
 }

@@ -6,6 +6,7 @@
 
 using namespace muduo;
 
+//构造方法
 AsyncLogging::AsyncLogging(const string& basename,
                            size_t rollSize,
                            int flushInterval)
@@ -13,7 +14,7 @@ AsyncLogging::AsyncLogging(const string& basename,
     running_(false),
     basename_(basename),
     rollSize_(rollSize),
-    thread_(boost::bind(&AsyncLogging::threadFunc, this), "Logging"),
+    thread_(boost::bind(&AsyncLogging::threadFunc, this), "Logging"),  //指定线程方法
     latch_(1),
     mutex_(),
     cond_(mutex_),
@@ -26,17 +27,33 @@ AsyncLogging::AsyncLogging(const string& basename,
   buffers_.reserve(16);
 }
 
+//异步方式增加一个日志记录
 void AsyncLogging::append(const char* logline, int len)
 {
+  /*
+   * C++作用域有这样的一个属性
+   * 在创建一个类对象时，会调用其构造方法
+   * 在创建对象对应的作用域结束时，变量失效，会自动调用其析构方法！
+   * 所以这里在MutexLockGuard的构造方法中进行加锁
+   * 在MutexLockGuard的析构方法中做解锁的调用
+   */
   muduo::MutexLockGuard lock(mutex_);
+  
+  //typedef muduo::detail::FixedBuffer<muduo::detail::kLargeBuffer> Buffer;
+  //typedef boost::ptr_vector<Buffer> BufferVector;
+  //typedef BufferVector::auto_type BufferPtr;
+  //BufferPtr currentBuffer_;
+  //这里判断如果当前缓冲区的可用空间大于len，那么就将这个日志放到当前的缓冲区
   if (currentBuffer_->avail() > len)
   {
     currentBuffer_->append(logline, len);
   }
   else
   {
+    //BufferVector buffers_;
     buffers_.push_back(currentBuffer_.release());
 
+    //BufferPtr nextBuffer_;
     if (nextBuffer_)
     {
       currentBuffer_ = boost::ptr_container::move(nextBuffer_);
@@ -50,17 +67,23 @@ void AsyncLogging::append(const char* logline, int len)
   }
 }
 
+//异步写日志线程方法
 void AsyncLogging::threadFunc()
 {
   assert(running_ == true);
   latch_.countDown();
+
+  //定义日志输出
   LogFile output(basename_, rollSize_, false);
+  
   BufferPtr newBuffer1(new Buffer);
   BufferPtr newBuffer2(new Buffer);
   newBuffer1->bzero();
   newBuffer2->bzero();
   BufferVector buffersToWrite;
   buffersToWrite.reserve(16);
+
+  //线程循环
   while (running_)
   {
     assert(newBuffer1 && newBuffer1->length() == 0);
@@ -68,6 +91,9 @@ void AsyncLogging::threadFunc()
     assert(buffersToWrite.empty());
 
     {
+      /*
+       * 同理，利用C++类对象的作用域对构造和析构方法的调用，来自动化管理锁！
+       */
       muduo::MutexLockGuard lock(mutex_);
       if (buffers_.empty())  // unusual usage!
       {
