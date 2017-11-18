@@ -49,8 +49,8 @@ class TcpConnection : boost::noncopyable,
   TcpConnection(EventLoop* loop,
                 const string& name,
                 int sockfd,
-                const InetAddress& localAddr,
-                const InetAddress& peerAddr);
+                const InetAddress& localAddr,   //TCP连接的本方地址信息
+                const InetAddress& peerAddr);   //TCP连接的对方地址信息
   ~TcpConnection();
 
   EventLoop* getLoop() const { return loop_; }
@@ -87,15 +87,19 @@ class TcpConnection : boost::noncopyable,
   boost::any* getMutableContext()
   { return &context_; }
 
+  //收到连接的回调
   void setConnectionCallback(const ConnectionCallback& cb)
   { connectionCallback_ = cb; }
 
+  //收到消息的回调
   void setMessageCallback(const MessageCallback& cb)
   { messageCallback_ = cb; }
 
+  //写完成的回调
   void setWriteCompleteCallback(const WriteCompleteCallback& cb)
   { writeCompleteCallback_ = cb; }
 
+  //？？
   void setHighWaterMarkCallback(const HighWaterMarkCallback& cb, size_t highWaterMark)
   { highWaterMarkCallback_ = cb; highWaterMark_ = highWaterMark; }
 
@@ -116,11 +120,12 @@ class TcpConnection : boost::noncopyable,
   void connectDestroyed();  // should be called only once
 
  private:
+  //连接状态：未连接、正在连接、连接、正在断开连接
   enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
-  void handleRead(Timestamp receiveTime);
-  void handleWrite();
-  void handleClose();
-  void handleError();
+  void handleRead(Timestamp receiveTime);  //处理读
+  void handleWrite();                      //处理写
+  void handleClose();                      //处理连接关闭
+  void handleError();                      //处理网络错误
   // void sendInLoop(string&& message);
   void sendInLoop(const StringPiece& message);
   void sendInLoop(const void* message, size_t len);

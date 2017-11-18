@@ -34,13 +34,18 @@ class EventLoop;
 class Channel : boost::noncopyable
 {
  public:
+  //定义事件发生时回调函数指针类型
   typedef boost::function<void()> EventCallback;
+  //定义收到数据时回调函数指针类型
   typedef boost::function<void(Timestamp)> ReadEventCallback;
 
+  //EventLoop和Channel是一对多的关系！
   Channel(EventLoop* loop, int fd);
   ~Channel();
 
   void handleEvent(Timestamp receiveTime);
+
+  //设置回调函数
   void setReadCallback(const ReadEventCallback& cb)
   { readCallback_ = cb; }
   void setWriteCallback(const EventCallback& cb)
@@ -70,11 +75,13 @@ class Channel : boost::noncopyable
   // int revents() const { return revents_; }
   bool isNoneEvent() const { return events_ == kNoneEvent; }
 
+  //设置可读、可写属性
   void enableReading() { events_ |= kReadEvent; update(); }
   void disableReading() { events_ &= ~kReadEvent; update(); }
   void enableWriting() { events_ |= kWriteEvent; update(); }
   void disableWriting() { events_ &= ~kWriteEvent; update(); }
   void disableAll() { events_ = kNoneEvent; update(); }
+
   bool isWriting() const { return events_ & kWriteEvent; }
   bool isReading() const { return events_ & kReadEvent; }
 
@@ -105,7 +112,7 @@ class Channel : boost::noncopyable
   const int  fd_;
   int        events_;
   int        revents_; // it's the received event types of epoll or poll
-  int        index_; // used by Poller.
+  int        index_;   // used by Poller.
   bool       logHup_;
 
   boost::weak_ptr<void> tie_;

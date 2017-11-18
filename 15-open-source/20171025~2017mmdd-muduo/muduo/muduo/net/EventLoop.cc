@@ -32,6 +32,21 @@ const int kPollTimeMs = 10000;
 
 int createEventfd()
 {
+  /*
+   这个函数会创建一个事件对象(eventfd object)，用来实现进程（线程）间的等待/通知(wait/notify)机制
+   内核会为这个对象维护一个64位的计数器
+   并且使用第一个参数(initval)初始化这个计数器
+   调用这个函数就会返回一个新的文件描述符
+   第二个参数有以下一些宏可以使用：
+     EFD_NONBLOCK，功能同open(2)的O_NONBLOCK，设置对象为非阻塞状态
+       如果没有设置这个状态的话，read(2)读eventfd，并且计数器的值为0就一直阻塞在read调用当中
+       要是设置了这个标志，就会返回一个EAGAIN错误（errno=EAGAIN），效果也如同额外调用select(2)达到的效果
+     EFD_CLOEXEC，这个标识被设置的话，调用exec后会自动关闭文件描述符，防止泄露
+   创建这个对象后，可以对其做如下操作：
+     write将缓冲区写入的8字节整型值加到内核计数器上
+     read读取8字节值，并把计数器重设为0，如果调用read时计数器为0，如果eventfd是阻塞的，read就一直阻塞在这里，否则就得到一个EAGAIN错误
+     如果buffer的长度小于8那么read就会失败，错误代码被设置成EINVAL
+    */
   int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
   if (evtfd < 0)
   {
@@ -47,12 +62,19 @@ class IgnoreSigPipe
  public:
   IgnoreSigPipe()
   {
+    /*
+      signal(参数1, 参数2)
+        参数1：我们要进行处理的信号，系统的信号可以在终端输入kill -l查看（共64个）
+        参数2：我们处理的方式（是系统默认还是忽略还是捕获）
+      ::signal(SIGPIPE, SIG_IGN);表示SIG_IGN代表忽略SIGINT信号
+     */
     ::signal(SIGPIPE, SIG_IGN);
     // LOG_TRACE << "Ignore SIGPIPE";
   }
 };
 #pragma GCC diagnostic error "-Wold-style-cast"
 
+//这样会自动调用构造函数！
 IgnoreSigPipe initObj;
 }
 
@@ -111,6 +133,12 @@ void EventLoop::loop()
   while (!quit_)
   {
     activeChannels_.clear();
+
+    /*
+     * const int kPollTimeMs = 10000;
+     * 按照字面上的理解，调用这个函数，socketfd将会在activeChannels_中返回
+     * 后续就是轮询处理activeChannels_中的socketfd
+     */
     pollReturnTime_ = poller_->poll(kPollTimeMs, &activeChannels_);
     ++iteration_;
     if (Logger::logLevel() <= Logger::TRACE)
@@ -119,8 +147,7 @@ void EventLoop::loop()
     }
     // TODO sort channel by priority
     eventHandling_ = true;
-    for (ChannelList::iterator it = activeChannels_.begin();
-        it != activeChannels_.end(); ++it)
+    for (ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); ++it)
     {
       currentActiveChannel_ = *it;
       currentActiveChannel_->handleEvent(pollReturnTime_);
@@ -280,6 +307,10 @@ void EventLoop::abortNotInLoopThread()
 void EventLoop::wakeup()
 {
   uint64_t one = 1;
+  /*
+   * wakeupFd_是通过调用eventfd获取的
+   * write将缓冲区写入的8字节整型值加到内核计数器上
+   */
   ssize_t n = sockets::write(wakeupFd_, &one, sizeof one);
   if (n != sizeof one)
   {
@@ -316,8 +347,7 @@ void EventLoop::doPendingFunctors()
 
 void EventLoop::printActiveChannels() const
 {
-  for (ChannelList::const_iterator it = activeChannels_.begin();
-      it != activeChannels_.end(); ++it)
+  for (ChannelList::const_iterator it = activeChannels_.begin(); it != activeChannels_.end(); ++it)
   {
     const Channel* ch = *it;
     LOG_TRACE << "{" << ch->reventsToString() << "} ";

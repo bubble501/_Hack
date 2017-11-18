@@ -54,6 +54,10 @@ void Acceptor::listen()
   acceptChannel_.enableReading();
 }
 
+/*
+ * 调用accept方法接收新的TCP连接
+ * 在这个accept对应的Channel中会将该handleRead方法设置为读回调方法
+ */
 void Acceptor::handleRead()
 {
   loop_->assertInLoopThread();
@@ -66,6 +70,11 @@ void Acceptor::handleRead()
     // LOG_TRACE << "Accepts of " << hostport;
     if (newConnectionCallback_)
     {
+      /*
+        typedef boost::function<void (int sockfd,
+                                const InetAddress&)> NewConnectionCallback;
+        NewConnectionCallback newConnectionCallback_;
+      */
       newConnectionCallback_(connfd, peerAddr);
     }
     else

@@ -22,9 +22,13 @@ Poller::~Poller()
 {
 }
 
+/*
+ * 搜索ChannelMap，检查channel是不是在这个容器里面
+ */
 bool Poller::hasChannel(Channel* channel) const
 {
   assertInLoopThread();
+  //typedef std::map<int, Channel*> ChannelMap;
   ChannelMap::const_iterator it = channels_.find(channel->fd());
   return it != channels_.end() && it->second == channel;
 }

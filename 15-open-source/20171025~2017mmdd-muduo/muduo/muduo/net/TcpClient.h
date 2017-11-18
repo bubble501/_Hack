@@ -40,6 +40,11 @@ class TcpClient : boost::noncopyable
 
   TcpConnectionPtr connection() const
   {
+    /*
+     * 读一个变量的时候也是需要进行加锁的！
+     * 这里return connection_;的时候其实是将这个值拷贝出来的
+     * 所以完成return之后connection_的值已经拷贝出去了，不用再加锁了！
+     */
     MutexLockGuard lock(mutex_);
     return connection_;
   }
@@ -92,6 +97,8 @@ class TcpClient : boost::noncopyable
   // always in loop thread
   int nextConnId_;
   mutable MutexLock mutex_;
+
+  //typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
   TcpConnectionPtr connection_; // @GuardedBy mutex_
 };
 

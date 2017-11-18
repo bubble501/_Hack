@@ -50,19 +50,24 @@ class Timer : boost::noncopyable
     callback_();
   }
 
+  //expiration是截止的意思
   Timestamp expiration() const  { return expiration_; }
   bool repeat() const { return repeat_; }
   int64_t sequence() const { return sequence_; }
 
   void restart(Timestamp now);
 
+  /*
+   * static AtomicInt64 s_numCreated_;
+   * 使用static关键字，表示该变量是类的成员变量，而不是对象的成员变量
+   */
   static int64_t numCreated() { return s_numCreated_.get(); }
 
  private:
-  const TimerCallback callback_;
-  Timestamp expiration_;
-  const double interval_;
-  const bool repeat_;
+  const TimerCallback callback_;  //回调函数
+  Timestamp expiration_;          //截止
+  const double interval_;         //时间间隔
+  const bool repeat_;             //是否是重复执行的定时器对象
   const int64_t sequence_;
 
   static AtomicInt64 s_numCreated_;

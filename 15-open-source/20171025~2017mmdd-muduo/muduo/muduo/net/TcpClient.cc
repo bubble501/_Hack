@@ -41,9 +41,16 @@ namespace detail
 
 void removeConnection(EventLoop* loop, const TcpConnectionPtr& conn)
 {
+  /*
+   * TcpConnection::connectDestroyed的说明：
+   * called when TcpServer has removed me from its map
+   */
   loop->queueInLoop(boost::bind(&TcpConnection::connectDestroyed, conn));
 }
 
+/*
+ * typedef boost::shared_ptr<Connector> ConnectorPtr;
+ */
 void removeConnector(const ConnectorPtr& connector)
 {
   //connector->
@@ -57,10 +64,11 @@ TcpClient::TcpClient(EventLoop* loop,
                      const InetAddress& serverAddr,
                      const string& nameArg)
   : loop_(CHECK_NOTNULL(loop)),
-    connector_(new Connector(loop, serverAddr)),
+    connector_(new Connector(loop, serverAddr)),     //根据loop、服务端地址创建一个Connector
+                                                     //验证Connector的构造方法中是不是向服务端发起连接？！
     name_(nameArg),
-    connectionCallback_(defaultConnectionCallback),
-    messageCallback_(defaultMessageCallback),
+    connectionCallback_(defaultConnectionCallback),  //连接成功的回调函数
+    messageCallback_(defaultMessageCallback),        //收到消息的回调函数
     retry_(false),
     connect_(true),
     nextConnId_(1)
@@ -169,6 +177,12 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
   {
     MutexLockGuard lock(mutex_);
     assert(connection_ == conn);
+
+    /*
+     * typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
+     * shared_ptr的reset方法是这样的作用，假如a是shared_ptr类型
+     * a调用reset方法之后，a 原先所指的对象会被销毁，并且 a 会变成 NULL
+     */
     connection_.reset();
   }
 
@@ -177,6 +191,10 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
   {
     LOG_INFO << "TcpClient::connect[" << name_ << "] - Reconnecting to "
              << connector_->serverAddress().toIpPort();
+
+    /*
+     * typedef boost::shared_ptr<Connector> ConnectorPtr;
+     */
     connector_->restart();
   }
 }

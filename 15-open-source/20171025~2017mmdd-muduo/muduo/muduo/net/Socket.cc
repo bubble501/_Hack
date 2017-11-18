@@ -20,11 +20,17 @@
 using namespace muduo;
 using namespace muduo::net;
 
+/*
+ * 析构函数中做关闭Socket的处理
+ */
 Socket::~Socket()
 {
   sockets::close(sockfd_);
 }
 
+/*
+ * getTcpInfo获取TCP相关信息
+ */
 bool Socket::getTcpInfo(struct tcp_info* tcpi) const
 {
   socklen_t len = sizeof(*tcpi);
@@ -32,6 +38,12 @@ bool Socket::getTcpInfo(struct tcp_info* tcpi) const
   return ::getsockopt(sockfd_, SOL_TCP, TCP_INFO, tcpi, &len) == 0;
 }
 
+/*
+ * 调用getTcpInfo获取TCP相关信息
+ * 然后转换成string格式
+ * 这里涉及到TCP协议的诸多控制参数、算法、TCP的一些原理
+ * 弄清楚下面这些参数都是什么作用，将会是很好的研究TCP核心原理的方法
+ */
 bool Socket::getTcpInfoString(char* buf, int len) const
 {
   struct tcp_info tcpi;

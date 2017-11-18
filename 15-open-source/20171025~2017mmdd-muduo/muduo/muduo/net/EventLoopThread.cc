@@ -39,6 +39,9 @@ EventLoopThread::~EventLoopThread()
   }
 }
 
+/*
+ * 开始事件循环
+ */
 EventLoop* EventLoopThread::startLoop()
 {
   assert(!thread_.started());
@@ -48,6 +51,10 @@ EventLoop* EventLoopThread::startLoop()
     MutexLockGuard lock(mutex_);
     while (loop_ == NULL)
     {
+      /* 
+       * 调用startLoop的线程在这里被阻塞住
+       * 等到有其他线程调动cond_.notify()之后，才会从阻塞中走出去！
+       */
       cond_.wait();
     }
   }
@@ -70,6 +77,9 @@ void EventLoopThread::threadFunc()
     cond_.notify();
   }
 
+  /*
+   * 调用EventLoop的loop方法来循环处理事件
+   */
   loop.loop();
   //assert(exiting_);
   loop_ = NULL;

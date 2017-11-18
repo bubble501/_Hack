@@ -43,6 +43,7 @@ class Poller : boost::noncopyable
 
   /// Changes the interested I/O events.
   /// Must be called in the loop thread.
+  /// Poll中的updateChannel方法用于注册和更新关注的事件，所有的fd都需要调用它添加到事件循环中
   virtual void updateChannel(Channel* channel) = 0;
 
   /// Remove the channel, when it destructs.

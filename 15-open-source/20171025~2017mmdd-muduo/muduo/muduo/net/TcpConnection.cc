@@ -22,6 +22,10 @@
 using namespace muduo;
 using namespace muduo::net;
 
+/*
+ * muduo默认的收到连接回调函数
+ * 只是将连接的两端地址信息输出
+ */
 void muduo::net::defaultConnectionCallback(const TcpConnectionPtr& conn)
 {
   LOG_TRACE << conn->localAddress().toIpPort() << " -> "
@@ -46,10 +50,10 @@ TcpConnection::TcpConnection(EventLoop* loop,
     name_(nameArg),
     state_(kConnecting),
     reading_(true),
-    socket_(new Socket(sockfd)),
-    channel_(new Channel(loop, sockfd)),
-    localAddr_(localAddr),
-    peerAddr_(peerAddr),
+    socket_(new Socket(sockfd)),         //在收到连接的时候根据socketfd创建一个Socket对象
+    channel_(new Channel(loop, sockfd)), //在收到连接的时候根据socketfd、loop创建一个Channel对象
+    localAddr_(localAddr),               //本方地址信息
+    peerAddr_(peerAddr),                 //对方地址信息
     highWaterMark_(64*1024*1024)
 {
   channel_->setReadCallback(
@@ -86,6 +90,9 @@ string TcpConnection::getTcpInfoString() const
   return buf;
 }
 
+/*
+ * 底层应该是调用Socket API的send方法来发送数据
+*/
 void TcpConnection::send(const void* data, int len)
 {
   send(StringPiece(static_cast<const char*>(data), len));
@@ -101,6 +108,9 @@ void TcpConnection::send(const StringPiece& message)
     }
     else
     {
+      /*
+       * ？？
+       */
       loop_->runInLoop(
           boost::bind(&TcpConnection::sendInLoop,
                       this,     // FIXME
@@ -122,6 +132,9 @@ void TcpConnection::send(Buffer* buf)
     }
     else
     {
+      /*
+       * ？？
+       */
       loop_->runInLoop(
           boost::bind(&TcpConnection::sendInLoop,
                       this,     // FIXME
@@ -150,18 +163,34 @@ void TcpConnection::sendInLoop(const void* data, size_t len)
   // if no thing in output queue, try writing directly
   if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
   {
+    /*
+     * 非阻塞模式的Socket write
+     * 参数data是本地内存数据的起始地址，len是本地内存数据的大小
+     * 返回值表示本次调用write实际发送了多少数据
+     * 因为非阻塞模式存在因为发送缓冲区满了无法完全发送成功而退出的情况
+
+     * 这里面针对调用write返回值的处理就是我在网络编程中需要梳理的SocketAPI的细节
+     */
     nwrote = sockets::write(channel_->fd(), data, len);
     if (nwrote >= 0)
     {
       remaining = len - nwrote;
+      /*
+       * 如果发送完成，并且定义了发送完成的回调函数
+       * 那么就回调该回调函数！
+       */
       if (remaining == 0 && writeCompleteCallback_)
       {
+        //queueInLoop是做什么用的？
         loop_->queueInLoop(boost::bind(writeCompleteCallback_, shared_from_this()));
       }
     }
     else // nwrote < 0
     {
       nwrote = 0;
+      /*
+       * 不光只判断返回值，还要判断errno值
+       */
       if (errno != EWOULDBLOCK)
       {
         LOG_SYSERR << "TcpConnection::sendInLoop";
@@ -174,6 +203,10 @@ void TcpConnection::sendInLoop(const void* data, size_t len)
   }
 
   assert(remaining <= len);
+  /* 
+   * 如果没有发生错误，并且没有一次性发送完成
+   * 则执行下面的逻辑
+   */
   if (!faultError && remaining > 0)
   {
     size_t oldLen = outputBuffer_.readableBytes();
@@ -268,6 +301,9 @@ void TcpConnection::forceCloseInLoop()
   }
 }
 
+/*
+ * 将连接状态转换成字符串格式
+ */
 const char* TcpConnection::stateToString() const
 {
   switch (state_)

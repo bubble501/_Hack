@@ -35,13 +35,13 @@ class EventLoopThread : boost::noncopyable
   EventLoop* startLoop();
 
  private:
-  void threadFunc();
+  void threadFunc();  //线程方法
 
   EventLoop* loop_;
   bool exiting_;
-  Thread thread_;
-  MutexLock mutex_;
-  Condition cond_;
+  Thread thread_;     //线程对象
+  MutexLock mutex_;   //线程锁
+  Condition cond_;    //条件变量
   ThreadInitCallback callback_;
 };
 

@@ -24,6 +24,9 @@ namespace muduo
 namespace net
 {
 
+/*
+ * InetAddress是针对网络地址信息的封装
+ */
 class InetAddress;
 
 ///
@@ -57,8 +60,15 @@ class Socket : boost::noncopyable
   /// On error, -1 is returned, and *peeraddr is untouched.
   int accept(InetAddress* peeraddr);
 
+  /*
+   * TCP是全双工的，shutdownWrite是关闭发送方发送的这条通路
+   */
   void shutdownWrite();
 
+  /*
+   * 以下的是TCP协议的一些参数，这些涉及到
+   */
+  
   ///
   /// Enable/disable TCP_NODELAY (disable/enable Nagle's algorithm).
   ///

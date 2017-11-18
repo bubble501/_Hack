@@ -33,6 +33,9 @@ EventLoopThreadPool::~EventLoopThreadPool()
   // Don't delete loop, it's stack variable
 }
 
+/*
+ * 启动线程池中的所有线程
+ */
 void EventLoopThreadPool::start(const ThreadInitCallback& cb)
 {
   assert(!started_);
@@ -40,14 +43,25 @@ void EventLoopThreadPool::start(const ThreadInitCallback& cb)
 
   started_ = true;
 
+  /*
+   * 循环创建numThreads_个EventLoopThread
+   */
   for (int i = 0; i < numThreads_; ++i)
   {
     char buf[name_.size() + 32];
     snprintf(buf, sizeof buf, "%s%d", name_.c_str(), i);
     EventLoopThread* t = new EventLoopThread(cb, buf);
+
+    //boost::ptr_vector<EventLoopThread> threads_;
     threads_.push_back(t);
+
+    //std::vector<EventLoop*> loops_;
     loops_.push_back(t->startLoop());
   }
+
+  /*
+   * ？？？
+   */
   if (numThreads_ == 0 && cb)
   {
     cb(baseLoop_);
@@ -65,6 +79,8 @@ EventLoop* EventLoopThreadPool::getNextLoop()
     // round-robin
     loop = loops_[next_];
     ++next_;
+
+    //及时判断，当完成一边循环后，接下来从头开始循环！
     if (implicit_cast<size_t>(next_) >= loops_.size())
     {
       next_ = 0;

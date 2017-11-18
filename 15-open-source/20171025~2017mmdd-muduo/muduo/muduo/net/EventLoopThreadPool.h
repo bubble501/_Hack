@@ -34,6 +34,10 @@ class EventLoopThreadPool : boost::noncopyable
 
   EventLoopThreadPool(EventLoop* baseLoop, const string& nameArg);
   ~EventLoopThreadPool();
+
+  /*
+   * 设置线程池中线程的个数
+   */
   void setThreadNum(int numThreads) { numThreads_ = numThreads; }
   void start(const ThreadInitCallback& cb = ThreadInitCallback());
 
@@ -59,8 +63,8 @@ class EventLoopThreadPool : boost::noncopyable
   bool started_;
   int numThreads_;
   int next_;
-  boost::ptr_vector<EventLoopThread> threads_;
-  std::vector<EventLoop*> loops_;
+  boost::ptr_vector<EventLoopThread> threads_;   //使用vector来管理事件循环线程
+  std::vector<EventLoop*> loops_;                //使用vector来管理事件循环
 };
 
 }
