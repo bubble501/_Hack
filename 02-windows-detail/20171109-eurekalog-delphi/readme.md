@@ -10,10 +10,7 @@ EurekaLog的下载地址是[https://www.eurekalog.com/downloads_delphi.php](http
 
 >Quick introduction to EurekaLog
 
-<video id="video" controls="" preload="none" poster="http://www.xumenger.com/guestbook/guest.jpg">
-    <source id="mp4" src="./vedio/Tutorial1.mp4" type="video/mp4">
-    <p>Quick introduction to EurekaLog.</p>
-</video>
+./vedio/Tutorial1.mp4
 
 根据视频内容，可以看到，当程序出现异常的时候可以看到异常发生的简介、调用栈、模块、汇编代码、Delphi代码信息、CPU、寄存器内容等信息
 
@@ -23,37 +20,25 @@ EurekaLog的下载地址是[https://www.eurekalog.com/downloads_delphi.php](http
 
 >This tutorial will show you how to work with error reports
 
-<video id="video" controls="" preload="none" poster="http://www.xumenger.com/guestbook/guest.jpg">
-    <source id="mp4" src="./vedio/Tutorial2.mp4" type="video/mp4">
-    <p>This tutorial will show you how to work with error reports.</p>
-</video>
+./vedio/Tutorial2.mp4
 
 ## Customizing EurekaLog
 
 >This tutorial will show you basics of EurekaLog's customizations
 
-<video id="video" controls="" preload="none" poster="http://www.xumenger.com/guestbook/guest.jpg">
-    <source id="mp4" src="./vedio/Tutorial3.mp4" type="video/mp4">
-    <p>This tutorial will show you basics of EurekaLog's customizations.</p>
-</video>
+./vedio/Tutorial3.mp4
 
 ## 通过e-mail发送bug报告
 
 >This tutorial will show you how to use e-mail sending features of EurekaLog(Google Mail/GMail will be used for illustration)
 
-<video id="video" controls="" preload="none" poster="http://www.xumenger.com/guestbook/guest.jpg">
-    <source id="mp4" src="./vedio/Tutorial4.mp4" type="video/mp4">
-    <p>This tutorial will show you how to use e-mail sending features of EurekaLog(Google Mail/GMail will be used for illustration).</p>
-</video>
+./vedio/Tutorial4.mp4
 
 ## Sending bug reports to bug tracker
 
 >This tutorial will show you how to use bug tracker sending features of EurekaLog(FogBugz will be used for illustration)
 
-<video id="video" controls="" preload="none" poster="http://www.xumenger.com/guestbook/guest.jpg">
-    <source id="mp4" src="./vedio/Tutorial5.mp4" type="video/mp4">
-    <p>This tutorial will show you how to use bug tracker sending features of EurekaLog(FogBugz will be used for illustration).</p>
-</video>
+./vedio/Tutorial5.mp4
 
 ## 参考资料
 
