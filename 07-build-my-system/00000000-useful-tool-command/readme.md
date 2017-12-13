@@ -9,6 +9,19 @@
 * `ps -aux | grep pid`可以查看到具体是哪个python文件
 * `kill -s 9 pid`可以将指定的进程强杀
 
+git、github、gitlab版本控制
+
+* github克隆项目到本地：`git clone git@github.com:HackerLaboratory/_Laboratory.git`
+* gitlab克隆项目到本地：`git clone git@gitlab.com:depthsystem/dquant.git`
+* 添加文件：`git add ???`
+* 递交修改记录：`git commit -m "???"`
+* 同步到远处某个分支：`git push origin 分支名`
+* 切换到某个分支：`git checkout 分支名`
+* 新增一个分支：`git checkout -b 分支名`
+* 删除一个分支：`git branch -d 分支名`
+
+详细可以参考[《同步管理本地git仓库和github仓库上的分支》](http://www.xumenger.com/git-github-20160804/)
+
 ## 系统工具
 
 调试、分析工具
