@@ -17,7 +17,7 @@ git、github、gitlab版本控制
 * 递交修改记录：`git commit -m "???"`
 * 同步到远处某个分支：`git push origin 分支名`
 * 切换到某个分支：`git checkout 分支名`
-* 新增一个分支：`git checkout -b 分支名`
+* 新增一个分支：`git checkout -b 分支名`，新的分支从当前所在分支拷贝所有内容
 * 删除一个分支：`git branch -d 分支名`
 
 详细可以参考[《同步管理本地git仓库和github仓库上的分支》](http://www.xumenger.com/git-github-20160804/)
