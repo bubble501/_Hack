@@ -57,6 +57,10 @@ def application(environ, start_response):
         # print post http content detail
         print(d)
         print(request_body)
+        __business_id = uuid.uuid1()
+        print(__business_id)
+        params = "{\"name\": \"徐猛\", \"metric\": \"btc\", \"range\": \"5\"}"
+        print(aliyun_send_sms(__business_id, PHONE_NUMBER, SIGNN_NAME, TEMPLATE_CODE, params))
 
         # make a response
         response_body = 'Datadog Webhook Response'
@@ -64,7 +68,7 @@ def application(environ, start_response):
         response_headers = [('Content-Type', 'text/html'), ('Content-Length', str(len(response_body)))]
         start_response(status, response_headers)
         return [response_body]
-    except MyException,e:
+    except Exception,e:
         print(e.message)
 
 
