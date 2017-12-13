@@ -9,7 +9,6 @@
 * 服务器判断如果webhook触发是因为比特币数量少于5个，那么就处理
 * 目前的处理是调用阿里云的API发送短信到某个手机号
 
-
 目前我的情况是这样的：
 
 * 如何调用datadog.statsd在代码中埋点
@@ -78,11 +77,11 @@ SDK工具包中一共包含了2个目录
 * aliyun-python-sdk-core：阿里云API调用的核心代码库
 * alicom-python-sdk-dysmsapi：流量直冲相关接口调用的客户端以及示例代码
 
-确定本机已经安装了python，版本要求2.6.5或以上版本
+确定本机已经安装了python，版本要求2.6.5或以上版本。另外阿里云Python API好像并不支持Python3
 
-进入aliyun-python-sdk-core执行`python setup.py install`或`python3 setup.py install`
+进入aliyun-python-sdk-core执行`python setup.py install`
 
-也可以运行demo示例，进入alicom-python-sdk-dysmsapi目录执行`python demo.py`或`python3 demo.py`
+进入alicom-python-sdk-dysmsapi执行`python setup.py install`
 
 [这里是SDK下载地址](https://help.aliyun.com/document_detail/55359.html?spm=5176.doc55491.2.8.eDUdVY)
 
@@ -148,6 +147,14 @@ if __name__ == '__main__':
 >为了方便程序代码的维护，建议将手机号、ACCESS_KEY_ID等信息维护在一个配置文件中
 
 >为了保证程序出问题的时候方便排查，建议将运行过程中遇到的所有异常信息输出到Log，方便后续有据可循！
+
+比如上面代码中的手机号、ACCESS_KEY_ID等信息都是正确的话，将其保存为sms.py，执行`sms.py`运行程序。可能会出现下面的报错（因为发送短信需要收费！）
+
+![image](./image/07.png)
+
+然后去阿里云平台，继续运行上面的例子，运行成功
+
+![image](./image/08.png)
 
 # 参考资料
 
