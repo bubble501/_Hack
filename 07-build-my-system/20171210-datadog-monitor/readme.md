@@ -295,7 +295,7 @@ With Webhooks you'll be able to:
 
 ### 使用RequestBin测试
 
-上面创建了一个RequestBin，获取了一个可用的URL：https://requestb.in/shbigcsh
+上面创建了一个RequestBin，获取了一个可用的URL：https://requestb.in/1cwjqc21
 
 接下来就是在Datadog的webhook配置界面新增一个关联到该URL的webhook配置了！
 
@@ -307,9 +307,7 @@ With Webhooks you'll be able to:
 
 然后【Update Configuration】即可完成webhook的新增
 
-接下来为了使用webhook，就需要将该webhook以`@webhook-name_of_the_webhook`的格式，比如我上面设置webhook对应的是`@webhook-testwebhook`，绑定到一个metric alert上
-
-怎么绑定到metric alert上呢？
+接下来为了使用webhook，就需要将该webhook以`@webhook-name_of_the_webhook`的格式，比如我上面设置webhook对应的是`@webhook-testwebhook`，然后进行测试
 
 点击[这个链接](https://app.Datadoghq.com/event/stream?tags_execution=and&show_private=true&per_page=30&aggregate_up=true&use_date_happened=false&display_timeline=true&from_ts=1512961200000&priority=normal&live=true&is_zoomed=false&status=all&to_ts=1513047600000&is_auto=false&incident=true&only_discussed=false&no_user=false&page=0&bucket_size=1800000)
 
@@ -464,6 +462,16 @@ httpd.serve_forever()
 可以看到在`118.31.8.178`这台机器上的输出如下
 
 ![image](./image/15.png)
+
+### webhook在Datadog的配置
+
+上面是直接通过在[这个链接](https://app.Datadoghq.com/event/stream?tags_execution=and&show_private=true&per_page=30&aggregate_up=true&use_date_happened=false&display_timeline=true&from_ts=1512961200000&priority=normal&live=true&is_zoomed=false&status=all&to_ts=1513047600000&is_auto=false&incident=true&only_discussed=false&no_user=false&page=0&bucket_size=1800000)手动发送webhook的方式来进行测试的
+
+实际的系统监控中显然不可能是这样的，需要将一个webhook绑定到一个metric alert上
+
+怎么绑定到metric alert上呢？
+
+
 
 # 简单总结
 
