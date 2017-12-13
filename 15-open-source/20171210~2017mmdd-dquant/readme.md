@@ -296,3 +296,64 @@ def run(self):
 根据以上对代码的梳理，下面简单的整理了一下系统的架构图
 
 ![image](./image/01.png)
+
+### 使用到的模块
+
+* influxdb，[influxdb是Go编写的时序数据库](https://www.linuxdaxue.com/influxdb-principle.html)
+    * [《influxdb的简单使用》](http://www.361way.com/influxdb-user/5291.html)
+* redis
+    * 数据存储
+    * 发布信息、订阅信息
+* mongodb
+* datadog，是一款目前很流行的云监控平台
+
+### 技术点
+
+* 异步IO，在各个市场的websocket实现中大量用到异步IO
+    * websockts，异步IO还不是很熟悉
+    * asyncio，异步IO还不是很熟悉
+* concurrent.futures.ProcessPoolExecutor，进程池怎么用
+
+### btc市场
+
+* okex
+* bitmex
+
+### 模块和架构简述
+
+* tests，测试模块，用于单元测试、自动化测试、回归测试，保证系统开发的质量
+    * tests下面封装了对代码中各种实现的测试，比如对配置功能、市场类等的测试封装
+* datafeed
+* pipeline，里面依赖redis实现订阅者、发布者模型
+    * 同时在订阅者模块实现简单的事件驱动引擎，当收到某频道的数据时，回调对应处理方法
+* strategy，里面是量化策略的实现   
+    * diff模块，提供比较不同市场价差的接口等
+    * ticker模块，
+* markets，实现对各个比特币市场的封装，market.py里面定义的市场类是一个线程
+    * 比如okex市场分别提供了同步和异步接口，同步用requests模块编写、异步用websockets模块编写
+
+### websockets详解
+
+在我整理的文章[什么是WebSocket？](http://www.xumenger.com/websocket-async-awit-20171211/)对WebSocket进行了简单的讲解，包括WebSocket简单原理、python的websockets模块、python的asyncio模块
+
+但是还是不够清晰，这里讲参考dquant中market模块的代码进行详细的总结
+
+在market.py中有简单对websocket的使用
+
+```
+    # 保持连接
+    async def keep_connect(self):
+        if self.websocket == None:
+            self.websocket = await websockets.connect(self.base_url)
+        else:
+            if not self.websocket.open:
+                self.websocket.close()
+                self.websocket = await websockets.connect(self.base_url)
+        await self.sub_channel()
+```
+
+再去看_okex_future_ws.py中的代码细节，对websockets能有个深刻的理解
+
+同时会在`dquant_dev-monitor\dquant\markets\_okex_future_ws.py`添加详细的注释！更详细的用法直接去这份代码里面看详细的注释说明！
+
+在`dquant_dev-monitor\dquant\markets\_okex_future_ws.py`里面有详细的如何将websocket进行同步化的代码实现！
