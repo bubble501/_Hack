@@ -138,7 +138,7 @@ def send_sms(business_id, phone_number, sign_name, template_code, template_param
 if __name__ == '__main__':
 	__business_id = uuid.uuid1()
     print __business_id
-    params = "{\"code\": \"12345\", \"product\": \"云通信\"}"
+    params = "{\"name\": \"徐猛\", \"metric\": \"btc\", \"range\": \"5\"}"
     print send_sms(__business_id, "1500000000", "云通信产品", "SMS_000000", params)
 ```
 
