@@ -170,13 +170,13 @@ Datadog内置系统监控以及第三方整合（redis、nginx等）都很好用
 datadong的自定义指标有两种：Count和Histogram
 
 * Count用于计数，统计某事件在一个时间区间内发送多少次
-	* 比如可以定义一个page_view来记录应用中每个页面的访问次数
+  * 比如可以定义一个page_view来记录应用中每个页面的访问次数
 * Histogram在性能监控中更为有用
-	* 它的每个数据点是一个时间戳加上一个浮点值
-	* 可以统计某个事件在一个时间区间内发生的次数
-	* 也可以统计这些事件所对应的浮点数的平均值、中位数、最大值、最小值等
-	* 比如记录每个请求的响应时间
-	* 用Histogram来记录，就可以方便地得到某个时间段的平均响应时间和最长响应时间，这两个数据对于性能监控至关重要
+  * 它的每个数据点是一个时间戳加上一个浮点值
+  * 可以统计某个事件在一个时间区间内发生的次数
+  * 也可以统计这些事件所对应的浮点数的平均值、中位数、最大值、最小值等
+  * 比如记录每个请求的响应时间
+  * 用Histogram来记录，就可以方便地得到某个时间段的平均响应时间和最长响应时间，这两个数据对于性能监控至关重要
 
 对发送到datadong的每个数据点，可以添加多个tag，这对于之后数据的查询和分类非常有帮助，比如我们可以根据数据来自哪个microservice给它们打上不同的tag。在实际使用中，我们会以更细的粒度在数据点上添加tag
 
@@ -192,7 +192,7 @@ statsd.increment('event.page_view', tag = ['app:glow', 'page:home'])
 
 # send histogram data
 statsd.histogram('service.response_time', 0.2
-				  tags = ['app:nurture', 'service:user', 'api:get_user_by_id'])
+          tags = ['app:nurture', 'service:user', 'api:get_user_by_id'])
 ```
 
 执行`python example.py`即可运行代码
@@ -471,9 +471,39 @@ httpd.serve_forever()
 
 怎么绑定到metric alert上呢？
 
+![image](./image/16.png)
 
+然后编辑这个Metric，就可以进行webhook等的设置了（下面关于这个界面的截图比较多！这里只是简单的截图展示，更多的设置自己后续慢慢研究！）
+
+![image](./image/17.png)
+
+![image](./image/18.png)
+
+![image](./image/19.png)
+
+![image](./image/20.png)
+
+### 新建监控，将metric绑定到webhook
+
+点击下面的【New Monitor】
+
+![image](./image/21.png)
+
+选择【Metric】，同时看到还可以创建其他类型的Monitor
+
+![image](./image/22.png)
+
+![image](./image/23.png)
+
+然后就可以选择某个Metric，配置对应的webhook了，比如上面示例代码中的`service.response_time`
+
+![image](./image/24.png)
+
+在这里创建了一个Metric后，可以参考上面的步骤，对Metric进行编辑，比如添加对应的webhook等！
 
 # 简单总结
+
+>至此关于Datadog的用法已经在广度上有了很深刻的了解了，后续就是在深度上进行更多的研究！
 
 >很多东西在最开始没有接触的时候确实看起来很没有头绪，但经过一系列的查阅资料、结合自己现有的知识经验进行同理化等，一定会拨云见日！
 
@@ -482,9 +512,9 @@ httpd.serve_forever()
 * [Datadog官网](https://www.Datadoghq.com/)
 * [Datadog官方接口文档](https://docs.Datadoghq.com)，这里可以查看API文档、Datadog用法等资料
 * [Datadog应用](https://app.Datadoghq.com)，这里是对自己的Datadog账户、监控数据、metric、webhook等进行管理的地方
-	* [API Key和APP Key相关的设置](https://app.Datadoghq.com/account/settings#api)
-	* [安装了的Integrations，比如webhook等](https://app.Datadoghq.com/account/settings)
-	* [被当前Datadog账户监控的主机信息](https://app.Datadoghq.com/infrastructure)
+  * [API Key和APP Key相关的设置](https://app.Datadoghq.com/account/settings#api)
+  * [安装了的Integrations，比如webhook等](https://app.Datadoghq.com/account/settings)
+  * [被当前Datadog账户监控的主机信息](https://app.Datadoghq.com/infrastructure)
 
 ### 本文内容和资源总结
 
