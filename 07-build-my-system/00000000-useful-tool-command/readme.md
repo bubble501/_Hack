@@ -13,12 +13,13 @@ git、github、gitlab版本控制
 
 * github克隆项目到本地：`git clone git@github.com:HackerLaboratory/_Laboratory.git`
 * gitlab克隆项目到本地：`git clone git@gitlab.com:depthsystem/dquant.git`
-* 添加文件：`git add ???`
-* 递交修改记录：`git commit -m "???"`
+* 添加文件：`git add 文件名
+* 递交修改记录：`git commit -m "修改说明"`
 * 同步到远处某个分支：`git push origin 分支名`
 * 切换到某个分支：`git checkout 分支名`
 * 新增一个分支：`git checkout -b 分支名`，新的分支从当前所在分支拷贝所有内容
-* 删除一个分支：`git branch -d 分支名`
+* 删除一个分支：`git branch -d 分支名`，强制删除：`git branch -D 分支名`
+* 同步删除远程仓库中的分支：`git push origin :分支名`
 
 详细可以参考[《同步管理本地git仓库和github仓库上的分支》](http://www.xumenger.com/git-github-20160804/)
 
@@ -26,7 +27,7 @@ git、github、gitlab版本控制
 
 调试、分析工具
 
-* Windows：WinDbg、OllyDbg、AQTime、eurekalog
+* Windows：WinDbg、OllyDbg、AQTime、eurekalog、IDA
 * Linux：GDB、Valgrind
 * 网络分析：tcpdump、WireShark
 
@@ -45,9 +46,6 @@ git、github、gitlab版本控制
 	* [阿里云控制台](https://home.console.aliyun.com/new)
 	* [阿里云SMS服务控制台](https://dysms.console.aliyun.com/dysms.htm?spm=5176.8911205.101.190.3b317f17Nwli0I#/)
 	* [阿里云短信服务平台帮助](https://help.aliyun.com/product/44282.html)
-* 比特币平台，比如通过平台的接口进行量化交易
-	* [okex市场|提供比特币、莱特币、以太币等数字资产的现货和合约交易](https://www.okex.com)
-	* [BitMEX|比特币商品交易所 (Bitcoin Mercantile Exchange): 期货,..](https://www.bitmex.com)
 * 代码托管平台可以选择github、gitlab
 	* 可利用github、gitlab的webhook机制实现当有新的push就自动部署的功能
 
@@ -65,3 +63,4 @@ git、github、gitlab版本控制
 >这里将一些常见的技术问题进行整理，是很好的技术能力的体现
 
 * WebSocket是异步的IO模式，如何将其同步化？
+* 如果某个库只支持Python2，是不是可以修改代码使其支持Python3？
