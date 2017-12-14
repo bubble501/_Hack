@@ -5,20 +5,20 @@
 * 通过datadog.statds的接口实时监控比特币的数量
 * 比特币的数量会实时同步到datadog平台（确定tag值……）
 * 当比特币的少于5个时，datadog会发送webhook给自己的主机上的接收webhook的服务器
-	* 在[20171210-datadog-monitor](https://github.com/HackerLaboratory/_Hack/tree/master/07-build-my-system/20171210-datadog-monitor)一文有讲解datadog、webhook的配置、使用、开发
+    * 在[20171210-datadog-monitor](https://github.com/HackerLaboratory/_Hack/tree/master/07-build-my-system/20171210-datadog-monitor)一文有讲解datadog、webhook的配置、使用、开发
 * 服务器判断如果webhook触发是因为比特币数量少于5个，那么就处理
 * 目前的处理是调用阿里云的API发送短信到某个手机号
 
 目前我的情况是这样的：
 
 * 如何调用datadog.statsd在代码中埋点
-	* 但是目前应该如何在量化系统的代码中埋点，改在什么地方埋点还不清楚
+    * 但是目前应该如何在量化系统的代码中埋点，改在什么地方埋点还不清楚
 * 如何在datadog平台上设置webhook，并且发送
-	* 但目前是自己手动发送的，没有找到如何配置当某个事件触发时自动发送webhook
-	* 这个点需要研究一下
+    * 但目前是自己手动发送的，没有找到如何配置当某个事件触发时自动发送webhook
+    * 这个点需要研究一下
 * 如何使用Python调用阿里云的接口，然后发送短信到指定手机号上
-	* 是不是需要有阿里云的账户？
-	* 阿里云API的开发文档在哪里参考？
+    * 是不是需要有阿里云的账户？
+    * 阿里云API的开发文档在哪里参考？
 
 # 搭建开发环境
 
@@ -136,7 +136,7 @@ def send_sms(business_id, phone_number, sign_name, template_code, template_param
     return smsResponse
 
 if __name__ == '__main__':
-	__business_id = uuid.uuid1()
+    __business_id = uuid.uuid1()
     print __business_id
     params = "{\"name\": \"徐猛\", \"metric\": \"btc\", \"range\": \"5\"}"
     print send_sms(__business_id, "1500000000", "云通信产品", "SMS_000000", params)
@@ -155,6 +155,24 @@ if __name__ == '__main__':
 然后去阿里云平台，继续运行上面的例子，运行成功
 
 ![image](./image/08.png)
+
+# HTTP接口
+
+上面使用的Python SDK开发，但是目前阿里云只支持Python2，如果想要用Python3进行开发怎么办？
+
+世上没有解决不了的问题，阿里云不光针对不同的编程语言提供了SDK，同时还提供了HTTP模式的接口，方便那些没有SDK支持的语言也能进行开发
+
+详细的可以参考[HTTP协议及签名](https://help.aliyun.com/document_detail/56189.html?spm=5176.doc55284.6.576.ty0836)
+
+下面给出一个Python3使用HTTP接口开发的例子
+
+```
+# -*- coding: utf-8 -*-
+import requests
+
+def send_sms(business_id, phone_number, sign_name, template_code, template_param=None):
+    
+```
 
 # 参考资料
 
