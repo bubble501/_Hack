@@ -169,9 +169,72 @@ if __name__ == '__main__':
 ```
 # -*- coding: utf-8 -*-
 import requests
+import uuid
+import urllib
+import datetime
+import base64
+import hmac
+import hashlib
+from hashlib import sha1
+import ssl
+import time
 
-def send_sms(business_id, phone_number, sign_name, template_code, template_param=None):
-    
+REGION = 'cn-hangzhou'
+ACCESS_KEY_ID = "yourAccessKeyId"
+ACCESS_KEY_SECRET = "youraccesskeysecret"
+ALIYUN_SMS_URL = "http://dysmsapi.aliyuncs.com/?"
+
+def percent_encode(encodeStr):
+    encodeStr = str(encodeStr)
+    String = urllib.parse.quote(encodeStr.encode('utf8'), '')
+    String = String.replace('+', '%20')
+    String = String.replace('*', '%2A')
+    String = String.replace('%7E', '~')
+    return String
+
+
+def send_sms(phone_number, sign_name, template_code, template_param=None):
+    params = {
+                'AccessKeyId': ACCESS_KEY_ID,
+                'Action': 'SendSms',
+                #'Format': 'XML',
+                'OutId': str(uuid.uuid1()),
+                'PhoneNumbers': phone_number,
+                'RegionId': REGION,
+                'SignName': sign_name,
+                'SignatureMethod': 'HMAC-SHA1',
+                'SignatureVersion': '1.0',
+                'SignatureNonce': str(uuid.uuid1()),
+                'TemplateCode': template_code,
+                'TemplateParam': template_param,
+                'Timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time())),
+                'Version': '2017-05-25',
+                'RegionId': REGION
+              }
+
+    # compute_signature
+    sortedParams = sorted(list(params.items()), key=lambda params: params[0])
+    canonicalizedQueryString = ''
+    for (k,v) in sortedParams:
+        canonicalizedQueryString += '&' + percent_encode(k) + '=' + percent_encode(v)
+    stringToSign = 'GET&%2F&' + percent_encode(canonicalizedQueryString[1:])
+    # print("stringToSign:  "+stringToSign)
+    h = hmac.new((ACCESS_KEY_SECRET+'&').encode(encoding="utf-8"), stringToSign.encode('utf-8'), sha1)
+    signature = base64.encodestring(h.digest()).strip()
+    params['Signature'] = signature
+
+    # from params dict get full URL
+    url = ALIYUN_SMS_URL + urllib.parse.urlencode(params)
+
+    print(url)
+    print('')
+    response = requests.get(url)
+    return response.text
+
+if __name__ == '__main__':
+    params = "{\"name\":\"徐猛\",\"metric\":\"btc\",\"range\":\"5\"}"
+    print(send_sms("15129311757", "徐猛", "SMS_116583089", params))
+
 ```
 
 # 参考资料
