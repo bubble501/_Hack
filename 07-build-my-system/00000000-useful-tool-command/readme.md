@@ -13,15 +13,14 @@ git、github、gitlab版本控制
 
 * github克隆项目到本地：`git clone git@github.com:HackerLaboratory/_Laboratory.git`
 * gitlab克隆项目到本地：`git clone git@gitlab.com:depthsystem/dquant.git`
-* 添加文件：`git add 文件名
+* 添加文件：`git add 文件名`
 * 递交修改记录：`git commit -m "修改说明"`
 * 同步到远处某个分支：`git push origin 分支名`
 * 切换到某个分支：`git checkout 分支名`
 * 新增一个分支：`git checkout -b 分支名`，新的分支从当前所在分支拷贝所有内容
 * 删除一个分支：`git branch -d 分支名`，强制删除：`git branch -D 分支名`
 * 同步删除远程仓库中的分支：`git push origin :分支名`
-
-详细可以参考[《同步管理本地git仓库和github仓库上的分支》](http://www.xumenger.com/git-github-20160804/)
+* 详细可以参考[《同步管理本地git仓库和github仓库上的分支》](http://www.xumenger.com/git-github-20160804/)
 
 ## 系统工具
 
@@ -64,3 +63,4 @@ git、github、gitlab版本控制
 
 * WebSocket是异步的IO模式，如何将其同步化？
 * 如果某个库只支持Python2，是不是可以修改代码使其支持Python3？
+* python的requests模块是同步请求，当有大量同步请求时会很慢，能不能将其异步化？
