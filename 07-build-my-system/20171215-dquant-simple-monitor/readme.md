@@ -38,7 +38,7 @@ SyntaxError: invalid syntax
 
 针对上面两个报错，可以自己去对应修改代码为以下形式以兼容Python3
 
-````
+```
   except (ValueError, TypeError):
 
   print(map_format_to_accept(XML))
